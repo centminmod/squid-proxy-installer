@@ -1,2 +1,2 @@
 # squid-proxy-installer
-Squid Proxy Installation with Username-Password Authentication
+Squid Proxy Installer with Username-Password Authentication
