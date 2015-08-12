@@ -1,0 +1,119 @@
+#!/bin/bash
+#########################################################
+# Anonymous Squid 3 Proxy with Authentication Installer #
+# RHEL 5/6/7, Debian 6,7,8  & Ubuntu (32 Bit & 64 Bit)  #
+#########################################################
+# Support: http://freevps.us/thread-15256.html          #
+# By Nevil Verdoold: http://freevps.us/user-4810.html   #
+#########################################################
+arch=$(getconf LONG_BIT)
+rhel5 ()	{
+	rpm -Uvh http://flexbox.sourceforge.net/centos/5/i386/flexbox-release-1-4.3.noarch.rpm
+	yum install perl-DBI libecap squid httpd -y
+	read -e -p "Your desired username: " usrn
+	htpasswd -c /etc/squid/passwd $usrn
+	case $arch in
+			32)
+					wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq5632.conf --no-check-certificate;;
+			64)
+					wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq5664.conf --no-check-certificate;;
+	esac
+	service squid restart && chkconfig squid on
+	service httpd stop && chkconfig httpd off
+	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
+	service iptables save
+}
+rhel6 ()	{
+	yum install squid httpd-tools -y
+	read -e -p "Your desired username: " usrn
+	htpasswd -c /etc/squid/passwd $usrn
+	case $arch in
+			32)
+					wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq5632.conf --no-check-certificate;;
+			64)
+					wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq5664.conf --no-check-certificate;;
+	esac
+	service squid restart && chkconfig squid on
+	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
+	service iptables save
+}
+rhel7 ()	{
+	yum install squid httpd-tools -y
+	read -e -p "Your desired username: " usrn
+	htpasswd -c /etc/squid/passwd $usrn
+	wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq7.conf --no-check-certificate
+	systemctl restart squid.service && systemctl enable squid.service
+	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
+	iptables-save
+}
+deb ()	{
+	apt-get update
+	apt-get install apache2-utils squid3 -y
+	read -e -p "Your desired username: " usrn
+	htpasswd -c /etc/squid3/passwd $usrn
+	wget -O /etc/squid3/squid.conf https://apps.singul4rity.com/squid/sqdeb.conf --no-check-certificate
+	service squid3 restart && update-rc.d squid3 defaults
+	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
+	iptables-save
+}
+deb8 () {
+	apt-get update
+	apt-get install apache2-utils squid3 -y
+	read -e -p "Your desired username: " usrn
+	htpasswd -c /etc/squid3/passwd $usrn
+	wget -O /etc/squid3/squid.conf https://apps.singul4rity.com/squid/sqdeb8.conf --no-check-certificate
+	service squid3 restart && update-rc.d squid3 defaults
+	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
+	iptables-save
+}
+ubt ()	{
+	apt-get update
+	apt-get install apache2-utils squid3 -y
+	read -e -p "Your desired username: " usrn
+	htpasswd -c /etc/squid3/passwd $usrn
+	wget -O /etc/squid3/squid.conf https://apps.singul4rity.com/squid/squbt.conf --no-check-certificate
+	cp /etc/init/squid3.conf /etc/init.d/squid3
+	service squid3 restart && update-rc.d squid3 defaults
+	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
+	iptables-save
+}
+info ()	{
+	echo "Usage: ./spi <option>"
+	echo "Example for Debian 6/7: ./spi -debian"
+	echo ""
+	echo "Options:"
+	echo "-rhel5   <<-- RHEL 5 based OS 32/64 Bit"
+	echo "-rhel6   <<-- RHEL 6 based OS 32/64 Bit"
+	echo "-rhel7   <<-- RHEL 7 based OS 32/64 Bit"
+	echo "-debian  <<-- Debian 6,7 32/64 Bit"
+	echo "-jessie  <<-- Debian 8 32/64 Bit"
+	echo "-ubuntu  <<-- Ubuntu 32/64 Bit"
+	echo ""
+	echo "RHEL 5: CentOS 5, Scientific Linux 5, etc..."
+	echo "RHEL 6: CentOS 6, Scientific Linux 6, etc..."
+	echo "RHEL 7: CentOS 7, Scientific Linux 7, etc..."
+	echo ""
+	echo "To add more users use the command below:"
+	echo "Debian/Ubuntu: htpasswd /etc/squid3/passwd username"
+	echo "RHEL: htpasswd /etc/squid/passwd username"
+	echo ""
+	echo ""
+	echo "Need help? Visit http://freevps.us/thread-15256.html for discussion & help."
+	echo ""
+}
+case $1 in
+	'-rhel5')
+		rhel5;;
+	'-rhel6')
+		rhel6;;
+	'-rhel7')
+		rhel7;;
+	'-debian')
+		deb;;
+	'-jessie')
+		deb8;;
+	'-ubuntu')
+		ubt;;
+	*)
+		info;;
+esac
