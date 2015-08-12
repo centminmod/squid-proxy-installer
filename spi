@@ -14,9 +14,9 @@ rhel5 ()	{
 	htpasswd -c /etc/squid/passwd $usrn
 	case $arch in
 			32)
-					wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq5632.conf --no-check-certificate;;
+					wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel5632.conf --no-check-certificate;;
 			64)
-					wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq5664.conf --no-check-certificate;;
+					wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel5664.conf --no-check-certificate;;
 	esac
 	service squid restart && chkconfig squid on
 	service httpd stop && chkconfig httpd off
@@ -29,9 +29,9 @@ rhel6 ()	{
 	htpasswd -c /etc/squid/passwd $usrn
 	case $arch in
 			32)
-					wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq5632.conf --no-check-certificate;;
+					wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel5632.conf --no-check-certificate;;
 			64)
-					wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq5664.conf --no-check-certificate;;
+					wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel5664.conf --no-check-certificate;;
 	esac
 	service squid restart && chkconfig squid on
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
@@ -41,7 +41,7 @@ rhel7 ()	{
 	yum install squid httpd-tools -y
 	read -e -p "Your desired username: " usrn
 	htpasswd -c /etc/squid/passwd $usrn
-	wget -O /etc/squid/squid.conf https://apps.singul4rity.com/squid/sq7.conf --no-check-certificate
+	wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel7.conf --no-check-certificate
 	systemctl restart squid.service && systemctl enable squid.service
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	iptables-save
@@ -51,7 +51,7 @@ deb ()	{
 	apt-get install apache2-utils squid3 -y
 	read -e -p "Your desired username: " usrn
 	htpasswd -c /etc/squid3/passwd $usrn
-	wget -O /etc/squid3/squid.conf https://apps.singul4rity.com/squid/sqdeb.conf --no-check-certificate
+	wget -O /etc/squid3/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-debian.conf --no-check-certificate
 	service squid3 restart && update-rc.d squid3 defaults
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	iptables-save
@@ -61,7 +61,7 @@ deb8 () {
 	apt-get install apache2-utils squid3 -y
 	read -e -p "Your desired username: " usrn
 	htpasswd -c /etc/squid3/passwd $usrn
-	wget -O /etc/squid3/squid.conf https://apps.singul4rity.com/squid/sqdeb8.conf --no-check-certificate
+	wget -O /etc/squid3/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-jessie.conf --no-check-certificate
 	service squid3 restart && update-rc.d squid3 defaults
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	iptables-save
@@ -71,7 +71,7 @@ ubt ()	{
 	apt-get install apache2-utils squid3 -y
 	read -e -p "Your desired username: " usrn
 	htpasswd -c /etc/squid3/passwd $usrn
-	wget -O /etc/squid3/squid.conf https://apps.singul4rity.com/squid/squbt.conf --no-check-certificate
+	wget -O /etc/squid3/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-ubuntu.conf --no-check-certificate
 	cp /etc/init/squid3.conf /etc/init.d/squid3
 	service squid3 restart && update-rc.d squid3 defaults
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
