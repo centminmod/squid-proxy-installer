@@ -1,13 +1,15 @@
 #!/bin/bash
-#########################################################
-# Anonymous Squid 3 Proxy with Authentication Installer #
-# RHEL 5/6/7, Debian 6,7,8  & Ubuntu (32 Bit & 64 Bit)  #
-#########################################################
-# Support: http://freevps.us/thread-15256.html          #
-# By Nevil Verdoold: http://freevps.us/user-4810.html   #
-#########################################################
+
+########################################################################
+# Squid Proxy Installer 1.1                                            #
+# Homepage: https://hiddenrefuge.eu.org/projects/squid-proxy-installer #
+# Copyright© 2014 - 2015 by Hidden-Refuge                              #
+# License: GNU GPL 3                                                   #
+# https://www.gnu.org/licenses/gpl.html                                #
+########################################################################
+
 arch=$(getconf LONG_BIT)
-rhel5 ()	{
+rhel5 () {
 	rpm -Uvh http://flexbox.sourceforge.net/centos/5/i386/flexbox-release-1-4.3.noarch.rpm
 	yum install perl-DBI libecap squid httpd -y
 	read -e -p "Your desired username: " usrn
@@ -23,7 +25,7 @@ rhel5 ()	{
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	service iptables save
 }
-rhel6 ()	{
+rhel6 () {
 	yum install squid httpd-tools -y
 	read -e -p "Your desired username: " usrn
 	htpasswd -c /etc/squid/passwd $usrn
@@ -37,7 +39,7 @@ rhel6 ()	{
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	service iptables save
 }
-rhel7 ()	{
+rhel7 () {
 	yum install squid httpd-tools -y
 	read -e -p "Your desired username: " usrn
 	htpasswd -c /etc/squid/passwd $usrn
@@ -77,7 +79,23 @@ ubt ()	{
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	iptables-save
 }
+fed() {
+	yum install squid httpd-tools -y
+	read -e -p "Your desired username: " usrn
+	htpasswd -c /etc/squid/passwd $usrn
+	case $arch in
+		32)
+			wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-fedora32.conf --no-check-certificate;;
+		64)
+			wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel7.conf --no-check-certificate;;
+	esac
+	systemctl restart squid && systemctl enable squid
+	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
+	iptables-save
+}
 info ()	{
+	echo "Squid Proxy Installer 1.1"
+	echo ""
 	echo "Usage: ./spi <option>"
 	echo "Example for Debian 6/7: ./spi -debian"
 	echo ""
@@ -88,17 +106,15 @@ info ()	{
 	echo "-debian  <<-- Debian 6,7 32/64 Bit"
 	echo "-jessie  <<-- Debian 8 32/64 Bit"
 	echo "-ubuntu  <<-- Ubuntu 32/64 Bit"
+	echo "-fedora  <<-- Fedora 32/64 Bit"
 	echo ""
-	echo "RHEL 5: CentOS 5, Scientific Linux 5, etc..."
-	echo "RHEL 6: CentOS 6, Scientific Linux 6, etc..."
-	echo "RHEL 7: CentOS 7, Scientific Linux 7, etc..."
+	echo "RHEL 5: CentOS 5, Scientific Linux 5, etc.."
+	echo "RHEL 6: CentOS 6, Scientific Linux 6, etc.."
+	echo "RHEL 7: CentOS 7, Scientific Linux 7, etc.."
 	echo ""
 	echo "To add more users use the command below:"
 	echo "Debian/Ubuntu: htpasswd /etc/squid3/passwd username"
-	echo "RHEL: htpasswd /etc/squid/passwd username"
-	echo ""
-	echo ""
-	echo "Need help? Visit http://freevps.us/thread-15256.html for discussion & help."
+	echo "RHEL/Fedora: htpasswd /etc/squid/passwd username"
 	echo ""
 }
 case $1 in
@@ -114,6 +130,8 @@ case $1 in
 		deb8;;
 	'-ubuntu')
 		ubt;;
+	'-fedora')
+		fed;;
 	*)
 		info;;
 esac
