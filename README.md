@@ -6,7 +6,7 @@ SPI was written for the most common server Linux operating systems:
 <li>CentOS 5/6/7</li>
 <li>Debian 6/7/8</li>
 <li>Ubuntu (most versions are supported)</li>
-<li>Fedora (untested - tests start soon)</li>
+<li>Fedora (most versions are supported)</li>
 <li>More OS on request</li>
 </ul>
 64 Bit versions of some operating systems require more than 256 MB RAM for Squid to work (this includes generally Debian and Ubuntu as a outcome of various tests in OpenVZ).<br /><br /><br />
@@ -28,6 +28,8 @@ Debian 8:<br />
 <code>./spi -jessie</code><br /><br />
 Ubuntu:<br />
 <code>./spi -ubuntu</code><br /><br />
+Fedora:<br />
+<code>./spi -fedora</code><br /><br />
 Step 4: Remove the SPI file with rm:<br />
 <code>rm -f spi</code><br /><br /><br />
 <b>How to add more users:</b><br /><br />
