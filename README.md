@@ -1,4 +1,7 @@
 # squid-proxy-installer
+
+Forked version for [centminmod.com LEMP stack](http://centminmod.com) support. You can view differences between original and forked [here](https://github.com/hidden-refuge/squid-proxy-installer/compare/master...centminmod:master).
+
 Squid Proxy Installer with Username-Password Authentication<br /><br /><br />
 The Squid Proxy Installer (short: SPI) is a fully automated shell script to install an anonymous HTTP proxy based on Squid 3 with a username and password authentication through NCSA Auth and htpasswd. It requires no other input than your desired username and password. The default configuration listens on the default TCP port 3128!<br /><br />
 SPI was written for the most common server Linux operating systems:
