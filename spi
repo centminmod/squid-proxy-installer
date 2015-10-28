@@ -36,6 +36,8 @@ rhel5 () {
 	service squid restart && chkconfig squid on
 	service httpd stop && chkconfig httpd off
 	csfsetup
+	echo
+	echo "squid proxy installed"
 }
 rhel6 () {
 	# don't need httpd-tools if using centminmod.com stack as 
@@ -61,6 +63,8 @@ rhel6 () {
 	esac
 	service squid restart && chkconfig squid on
 	csfsetup
+	echo
+	echo "squid proxy installed"
 }
 rhel7 () {
 	# don't need httpd-tools if using centminmod.com stack as 
@@ -81,6 +85,8 @@ rhel7 () {
 	wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel7.conf --no-check-certificate
 	systemctl restart squid.service && systemctl enable squid.service
 	csfsetup
+	echo
+	echo "squid proxy installed"
 }
 deb ()	{
 	apt-get update
@@ -91,6 +97,8 @@ deb ()	{
 	service squid3 restart && update-rc.d squid3 defaults
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	iptables-save
+	echo
+	echo "squid proxy installed"	
 }
 deb8 () {
 	apt-get update
@@ -101,6 +109,8 @@ deb8 () {
 	service squid3 restart && update-rc.d squid3 defaults
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	iptables-save
+	echo
+	echo "squid proxy installed"	
 }
 ubt ()	{
 	apt-get update
@@ -112,6 +122,8 @@ ubt ()	{
 	service squid3 restart && update-rc.d squid3 defaults
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	iptables-save
+	echo
+	echo "squid proxy installed"	
 }
 fed() {
 	yum install squid httpd-tools -y
@@ -126,6 +138,8 @@ fed() {
 	systemctl restart squid && systemctl enable squid
 	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
 	iptables-save
+	echo
+	echo "squid proxy installed"	
 }
 info ()	{
 	echo "Squid Proxy Installer 1.1"
