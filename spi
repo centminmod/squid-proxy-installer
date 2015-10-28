@@ -150,7 +150,6 @@ info ()	{
 	echo "Debian/Ubuntu: htpasswd /etc/squid3/passwd username"
 	if [ -f /usr/local/nginx/conf/htpasswd.sh ]; then
 		echo "RHEL/Fedora: /usr/local/nginx/conf/htpasswd.sh create /etc/squid/passwd username password"
-		/usr/local/nginx/conf/htpasswd.sh create /etc/squid/passwd $usrn $usrp
 	else
 		echo "RHEL/Fedora: htpasswd /etc/squid/passwd username"
 	fi	
