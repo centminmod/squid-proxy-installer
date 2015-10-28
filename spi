@@ -6,9 +6,22 @@
 # Copyright© 2014 - 2015 by Hidden-Refuge                              #
 # License: GNU GPL 3                                                   #
 # https://www.gnu.org/licenses/gpl.html                                #
+# modified for centminmod.com centos 6/7 Centmin Mod LEMP stack + CSF  #
 ########################################################################
 
 arch=$(getconf LONG_BIT)
+csfsetup() {
+	# For centminmod.com LEMP stack's CSF Firewall default install
+	if [ -f /etc/csf/csf.conf ]; then
+		sed -i "s/TCP_IN = \"/TCP_IN = \"3128,/g" /etc/csf/csf.conf
+		sed -i "s/TCP6_IN = \"/TCP6_IN = \"3128,/g" /etc/csf/csf.conf
+		csf -r
+	else
+		iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
+		service iptables save
+	fi
+}
+
 rhel5 () {
 	rpm -Uvh http://flexbox.sourceforge.net/centos/5/i386/flexbox-release-1-4.3.noarch.rpm
 	yum install perl-DBI libecap squid httpd -y
@@ -22,13 +35,24 @@ rhel5 () {
 	esac
 	service squid restart && chkconfig squid on
 	service httpd stop && chkconfig httpd off
-	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
-	service iptables save
+	csfsetup
 }
 rhel6 () {
-	yum install squid httpd-tools -y
+	# don't need httpd-tools if using centminmod.com stack as 
+	# it has it's own more secure htpasswd.sh capable of longer
+	# and more secure password hashing support
+	if [ -f /usr/local/nginx/conf/htpasswd.sh ]; then
+		yum install squid -y
+	else
+		yum install squid httpd-tools -y
+	fi
 	read -e -p "Your desired username: " usrn
-	htpasswd -c /etc/squid/passwd $usrn
+	if [ -f /usr/local/nginx/conf/htpasswd.sh ]; then
+		read -e -p "Your desired password: " usrp
+		/usr/local/nginx/conf/htpasswd.sh create /etc/squid/passwd $usrn $usrp
+	else
+		htpasswd -c /etc/squid/passwd $usrn
+	fi
 	case $arch in
 			32)
 					wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel5632.conf --no-check-certificate;;
@@ -36,17 +60,27 @@ rhel6 () {
 					wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel5664.conf --no-check-certificate;;
 	esac
 	service squid restart && chkconfig squid on
-	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
-	service iptables save
+	csfsetup
 }
 rhel7 () {
-	yum install squid httpd-tools -y
+	# don't need httpd-tools if using centminmod.com stack as 
+	# it has it's own more secure htpasswd.sh capable of longer
+	# and more secure password hashing support
+	if [ -f /usr/local/nginx/conf/htpasswd.sh ]; then
+		yum install squid -y
+	else
+		yum install squid httpd-tools -y
+	fi
 	read -e -p "Your desired username: " usrn
-	htpasswd -c /etc/squid/passwd $usrn
+	if [ -f /usr/local/nginx/conf/htpasswd.sh ]; then
+		read -e -p "Your desired password: " usrp		
+		/usr/local/nginx/conf/htpasswd.sh create /etc/squid/passwd $usrn $usrp
+	else
+		htpasswd -c /etc/squid/passwd $usrn
+	fi
 	wget -O /etc/squid/squid.conf https://raw.githubusercontent.com/hidden-refuge/squid-proxy-installer/master/spi-rhel7.conf --no-check-certificate
 	systemctl restart squid.service && systemctl enable squid.service
-	iptables -A INPUT -p tcp --dport 3128 -j ACCEPT
-	iptables-save
+	csfsetup
 }
 deb ()	{
 	apt-get update
@@ -114,7 +148,12 @@ info ()	{
 	echo ""
 	echo "To add more users use the command below:"
 	echo "Debian/Ubuntu: htpasswd /etc/squid3/passwd username"
-	echo "RHEL/Fedora: htpasswd /etc/squid/passwd username"
+	if [ -f /usr/local/nginx/conf/htpasswd.sh ]; then
+		echo "RHEL/Fedora: /usr/local/nginx/conf/htpasswd.sh create /etc/squid/passwd username password"
+		/usr/local/nginx/conf/htpasswd.sh create /etc/squid/passwd $usrn $usrp
+	else
+		echo "RHEL/Fedora: htpasswd /etc/squid/passwd username"
+	fi	
 	echo ""
 }
 case $1 in
